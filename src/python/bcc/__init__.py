@@ -896,25 +896,29 @@ class BPF(object):
         del self.tracepoint_fds[tp]
 
     def _attach_perf_event(self, progfd, ev_type, ev_config,
-            sample_period, sample_freq, pid, cpu, group_fd):
-        res = lib.bpf_attach_perf_event(progfd, ev_type, ev_config,
-                sample_period, sample_freq, pid, cpu, group_fd)
+            sample_period, sample_freq, pid, cpu, group_fd, sample_type):
+        res = lib.bpf_attach_perf_event2(progfd, ev_type, ev_config,
+                sample_period, sample_freq, pid, cpu, group_fd,
+                sample_type)
         if res < 0:
             raise Exception("Failed to attach BPF to perf event")
         return res
 
     def attach_perf_event(self, ev_type=-1, ev_config=-1, fn_name=b"",
-            sample_period=0, sample_freq=0, pid=-1, cpu=-1, group_fd=-1):
+            sample_period=0, sample_freq=0, pid=-1, cpu=-1, group_fd=-1,
+            sample_type=0):
         fn_name = _assert_is_bytes(fn_name)
         fn = self.load_func(fn_name, BPF.PERF_EVENT)
         res = {}
         if cpu >= 0:
             res[cpu] = self._attach_perf_event(fn.fd, ev_type, ev_config,
-                    sample_period, sample_freq, pid, cpu, group_fd)
+                    sample_period, sample_freq, pid, cpu, group_fd,
+                    sample_type)
         else:
             for i in get_online_cpus():
                 res[i] = self._attach_perf_event(fn.fd, ev_type, ev_config,
-                        sample_period, sample_freq, pid, i, group_fd)
+                        sample_period, sample_freq, pid, i, group_fd,
+                        sample_type)
         self.open_perf_events[(ev_type, ev_config)] = res
 
     def detach_perf_event(self, ev_type=-1, ev_config=-1):

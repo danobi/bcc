@@ -125,6 +125,9 @@ lib.bpf_attach_xdp.argtypes = [ct.c_char_p, ct.c_int, ct.c_uint]
 lib.bpf_attach_perf_event.restype = ct.c_int
 lib.bpf_attach_perf_event.argtype = [ct.c_int, ct.c_uint, ct.c_uint, ct.c_ulonglong, ct.c_ulonglong,
         ct.c_int, ct.c_int, ct.c_int]
+lib.bpf_attach_perf_event2.restype = ct.c_int
+lib.bpf_attach_perf_event2.argtype = [ct.c_int, ct.c_uint, ct.c_uint, ct.c_ulonglong, ct.c_ulonglong,
+        ct.c_int, ct.c_int, ct.c_int, ct.c_ulonglong]
 
 lib.bpf_close_perf_event_fd.restype = ct.c_int
 lib.bpf_close_perf_event_fd.argtype = [ct.c_int]

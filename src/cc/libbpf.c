@@ -1354,6 +1354,22 @@ int bpf_attach_perf_event_raw(int progfd, void *perf_event_attr, pid_t pid,
 int bpf_attach_perf_event(int progfd, uint32_t ev_type, uint32_t ev_config,
                           uint64_t sample_period, uint64_t sample_freq,
                           pid_t pid, int cpu, int group_fd) {
+  return bpf_attach_perf_event2(
+      progfd,
+      ev_type,
+      ev_config,
+      sample_period,
+      sample_freq,
+      pid,
+      cpu,
+      group_fd,
+      0);
+}
+
+int bpf_attach_perf_event2(int progfd, uint32_t ev_type, uint32_t ev_config,
+                           uint64_t sample_period, uint64_t sample_freq,
+                           pid_t pid, int cpu, int group_fd,
+                           uint64_t sample_type) {
   if (invalid_perf_config(ev_type, ev_config)) {
     return -1;
   }
@@ -1367,6 +1383,7 @@ int bpf_attach_perf_event(int progfd, uint32_t ev_type, uint32_t ev_config,
   struct perf_event_attr attr = {};
   attr.type = ev_type;
   attr.config = ev_config;
+  attr.sample_type = sample_type;
   if (pid > 0)
     attr.inherit = 1;
   if (sample_freq > 0) {
